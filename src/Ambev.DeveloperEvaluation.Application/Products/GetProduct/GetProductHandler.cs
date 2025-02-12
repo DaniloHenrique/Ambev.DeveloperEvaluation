@@ -16,6 +16,6 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
         }
 
         public async Task<GetProductResult?> Handle(GetProductCommand request, CancellationToken cancellationToken) =>
-            _mapper.Map<GetProductResult?>(await _productRepository.Get(request.Id));
+            _mapper.Map<GetProductResult?>(await _productRepository.Get(request.Id,cancellationToken));
     }
 }

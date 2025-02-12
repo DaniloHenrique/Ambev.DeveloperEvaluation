@@ -20,7 +20,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
                 .Categories
                 .Where(e => e.Id == entity.Id)
                 .ExecuteUpdateAsync(category => category
-                    .SetProperty(c => c.Description, entity.Description)
+                    .SetProperty(c => c.Description, entity.Description),
+                    cancellationToken
                 );
 
             return entity;

@@ -29,20 +29,29 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
 
         public override async Task<Cart> UpdateAsync(Cart entity, CancellationToken cancellationToken = default)
         {
-            var threads = entity
-                .Items
-                .Select(i => _context
-                    .CartItems
-                    .Where(cart => cart.Id == entity.Id)
-                    .ExecuteUpdateAsync(c => c
-                        .SetProperty(p=>p.Quantity,i.Quantity)
-                        .SetProperty(p=>p.ProductId,i.ProductId)
-                    )
-                );
+            foreach(var item in entity.Items)
+            {
+                if (item.Id == 0)
+                {
+                    _context.Products.Attach(item.Product);
+                    _context.CartItems.Add(item);
+                }
+                else
+                {
+                    _context.CartItems.Update(item);
+                }
+            }
 
-            await Task.WhenAll(threads);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return entity;
         }
+
+        public override async Task<Cart?> GetByIdAsync(int id, CancellationToken cancellationToken = default)=>
+            await _context
+                .Carts
+                .Include(c => c.User)
+                .Include(c => c.Items).ThenInclude(i=>i.Product)
+                .FirstOrDefaultAsync(cart => cart.Id == id,cancellationToken);
     }
 }

@@ -1,6 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.Application.Carts.GetCart;
+using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +39,51 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts
                     var response = await _mediator.Send(command, cancellationToken);
 
                     return Created(string.Empty, _mapper.Map<CreateCartResponse>(response));
-                }
+                },
+                cancellationToken
             );
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ApiResponseWithData<GetCartResponse>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public Task<IActionResult> Put(int id, [FromBody]UpdateCartRequest request, CancellationToken cancellationToken = default)
+        {
+            request.Id = id;
+
+            return ValidatedRequest(
+                new UpdateCartValidator(),
+                request,
+                async (cart) =>
+                {
+                    var request = _mapper.Map<UpdateCartCommand>(cart);
+                    var result = await _mediator.Send(request, cancellationToken);
+
+                    return result.Success
+                        ? NoContent()
+                        : NotFound($"Cart {id} not found");
+                },
+                cancellationToken
+            );
+        }
+
+
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ApiResponseWithData<GetCartResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public Task<IActionResult> Get(int id, CancellationToken cancellationToken = default) =>
+        ValidatedRequest(
+            new GetCartValidator(),
+            new GetCartRequest(id),
+            async (cart) =>
+            {
+                var command = _mapper.Map<GetCartCommand>(cart);
+                var response = await _mediator.Send(command, cancellationToken);
+
+                return Ok(_mapper.Map<GetCartResponse>(response));
+            },
+            cancellationToken
+        );
     }
 }

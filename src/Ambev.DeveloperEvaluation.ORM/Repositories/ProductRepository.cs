@@ -31,11 +31,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         public Task<IEnumerable<Product>> ListByCategoryAsync(int categoryId, CancellationToken cancellationToken = default) =>
             Task.Run(()=>ProductCompiledQueries<DefaultContext>.ListProductByCategoryQuery(_context, categoryId));
 
-        public Task<Product?> Get(int id) => _context
+        public Task<Product?> Get(int id, CancellationToken cancellationToken=default) => _context
             .Products
             .Include(p => p.Category)
             .Include(p => p.Rating)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
         public override async Task<Product> UpdateAsync(Product entity, CancellationToken cancellationToken = default)
         {
@@ -47,7 +47,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
                     .SetProperty(p=>p.Description, entity.Description)
                     .SetProperty(p=>p.Title, entity.Title)
                     .SetProperty(p=>p.Image, entity.Image)
-                    .SetProperty(p=>p.Price, entity.Price)  
+                    .SetProperty(p=>p.Price, entity.Price)  ,
+                    cancellationToken
                 );
 
             return entity;

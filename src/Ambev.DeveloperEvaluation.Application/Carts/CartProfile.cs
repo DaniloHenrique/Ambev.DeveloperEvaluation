@@ -13,8 +13,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts
             CreateMap<Product, ProductResult>()
                 .ForMember(result => result.Name, c => c.MapFrom(entity => entity.Title));
             CreateMap<CartItem, CartItemResult>();
-            CreateMap<User, UserResult>()
-                .ForMember(result => result.Name, c => c.MapFrom(entity => entity.Username));
+            CreateMap<User, UserResult>();
 
         }
     }
