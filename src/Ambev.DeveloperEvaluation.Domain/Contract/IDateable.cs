@@ -1,6 +1,6 @@
 ﻿namespace Ambev.DeveloperEvaluation.Domain.Contract
 {
-    public interface IDateble
+    public interface IDateable
     {
         DateTime Date { get; set; }
     }

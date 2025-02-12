@@ -6,17 +6,12 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     public class CartItem : BaseEntity<int>, IMeasurable
     {
-        public CartItem()
-        {
-            Product = new Product();
-            Cart = new Cart();
-        }
         public int Quantity { get; set; }
 
-        public Cart Cart { get; set; }
-        public int CartId { get=>Cart.Id; set=>Cart.Id = value; } 
-        public Product Product { get; set; }
-        public int ProductId { get => Product.Id;set=> ProductId = value; } 
+        public Cart Cart { get; set; } = null!;
+        public int CartId { get; set; }
+        public Product Product { get; set; } = null!;
+        public int ProductId { get; set; } 
         public double Discount { get => Quantity > 3 ? Rules.Discount.Rule(Quantity) : 0; }
     }
 }

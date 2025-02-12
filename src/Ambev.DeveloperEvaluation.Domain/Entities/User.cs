@@ -61,6 +61,11 @@ public class User : BaseUuidEntity, IUser
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
+    /// Carts owned by an user
+    /// </summary>
+    public List<Cart> Carts { get; set; } = [];
+
+    /// <summary>
     /// Gets the unique identifier of the user.
     /// </summary>
     /// <returns>The user's ID as a string.</returns>

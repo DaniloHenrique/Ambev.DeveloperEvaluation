@@ -1,8 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using Ambev.DeveloperEvaluation.Domain.Contexts;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
@@ -31,29 +29,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         public async virtual Task<IEnumerable<Entity>> GetAllAsync(CancellationToken cancellationToken = default) =>
             await GetDbSet.ToListAsync(cancellationToken);
 
-        public async virtual Task<bool> RemoveAsync(Key id, CancellationToken cancellationToken = default)
-        {
-            var e = await GetByIdAsync(id, cancellationToken);
-
-            if (e is null) return false;
-
-            GetDbSet.Remove(e);
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return true;
-        }
+        public async Task<bool> RemoveAsync(Key id, CancellationToken cancellationToken = default)=>
+            (await GetDbSet.Where(e=>e.Id.Equals(id)).ExecuteDeleteAsync(cancellationToken)) > 0;
 
         public virtual Task<Entity?> GetByIdAsync(Key id, CancellationToken cancellationToken = default) =>
             GetDbSet.FirstOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
 
-        public async virtual Task<Entity> UpdateAsync(Entity entity, CancellationToken cancellationToken = default)
-        {
-            GetDbSet.Update(entity);
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return entity;
-        }
+        public abstract Task<Entity> UpdateAsync(Entity entity, CancellationToken cancellationToken = default);
     }
 }

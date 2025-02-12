@@ -8,5 +8,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Contexts
         DbSet<User> Users { get; }
         DbSet<Product> Products { get; }
         DbSet<Category> Categories { get; }
+        DbSet<Cart> Carts { get; }
+        DbSet<CartItem> CartItems { get; }
     }
 }
