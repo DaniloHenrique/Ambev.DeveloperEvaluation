@@ -5,14 +5,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     public class Rating:BaseIdentityEntity, IRating
     {
-        public Rating() 
-        {
-            Product = new Product();
-        }
         public double Rate { get; set; }
         public int Count { get; set; }
 
-        public Product Product { get; set; }
-        public int ProductId { get => Product.Id;set=>Product.Id = value; } 
+        public Product Product { get; set; } = null!;
+        public int ProductId { get; set; } 
     }
 }

@@ -63,7 +63,7 @@ public class User : BaseUuidEntity, IUser
     /// <summary>
     /// Carts owned by an user
     /// </summary>
-    public List<Cart> Carts { get; set; } = new List<Cart>();
+    public List<Cart> Carts { get; set; } = [];
 
     /// <summary>
     /// Gets the unique identifier of the user.

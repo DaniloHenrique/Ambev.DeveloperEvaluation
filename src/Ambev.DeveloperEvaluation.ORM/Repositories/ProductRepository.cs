@@ -36,5 +36,22 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             .Include(p => p.Category)
             .Include(p => p.Rating)
             .FirstOrDefaultAsync(p => p.Id == id);
+
+        public override async Task<Product> UpdateAsync(Product entity, CancellationToken cancellationToken = default)
+        {
+            await _context
+                .Products
+                .Where(e => e.Id == entity.Id)
+                .ExecuteUpdateAsync(product => product
+                    .SetProperty(p => p.Price, entity.Price)
+                    .SetProperty(p=>p.Description, entity.Description)
+                    .SetProperty(p=>p.Title, entity.Title)
+                    .SetProperty(p=>p.Image, entity.Image)
+                    .SetProperty(p=>p.Price, entity.Price)  
+                );
+
+            return entity;
+        }
+
     }
 }

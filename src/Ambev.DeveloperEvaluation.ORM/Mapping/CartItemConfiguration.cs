@@ -22,7 +22,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder
                 .HasOne(ci=>ci.Cart)
                 .WithMany(ca=>ca.Items)
-                .HasForeignKey(ci => ci.ProductId);
+                .HasForeignKey(ci => ci.CartId);
         }
     }
 }

@@ -38,6 +38,6 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserRe
 
         var success = await _userRepository.DeleteAsync(request.Id, cancellationToken);
 
-        return new DeleteUserResponse { Success = false };
+        return new DeleteUserResponse { Success = success };
     }
 }
