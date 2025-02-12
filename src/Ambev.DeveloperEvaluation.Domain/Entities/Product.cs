@@ -17,6 +17,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public Category Category { get; set; }
         public int CategoryId { get => Category.Id; set => Category.Id = value; }
-        public Rating? Rating { get; set; }   
+        public Rating? Rating { get; set; }
+        public List<CartItem> CartItem { get; set; } = new List<CartItem>();
     }
 }
