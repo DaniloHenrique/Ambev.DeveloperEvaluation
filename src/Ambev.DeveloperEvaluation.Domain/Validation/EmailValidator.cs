@@ -1,0 +1,31 @@
+﻿using FluentValidation;
+using System.Text.RegularExpressions;
+
+namespace Ambev.DeveloperEvaluation.Domain.Validation;
+
+public partial class EmailValidator : AbstractValidator<string>
+{
+    public EmailValidator()
+    {
+        RuleFor(email => email)
+            .NotEmpty()
+            .WithMessage("The email address cannot be empty.")
+            .MaximumLength(100)
+            .WithMessage("The email address cannot be longer than 100 characters.")
+            .Must(BeValidEmail)
+            .WithMessage("The provided email address is not valid.");
+    }
+
+    private bool BeValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        // More strict email validation
+        var regex = MyRegex();
+        return regex.IsMatch(email);
+    }
+
+    [GeneratedRegex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
+    private static partial Regex MyRegex();
+}
