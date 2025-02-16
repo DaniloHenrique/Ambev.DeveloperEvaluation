@@ -6,6 +6,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
     {
 
         public string Description { get; set; } = string.Empty;
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<Product> Products { get; set; } = [];
     }
 }

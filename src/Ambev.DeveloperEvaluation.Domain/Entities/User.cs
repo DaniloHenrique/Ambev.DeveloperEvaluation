@@ -39,6 +39,11 @@ public class User : BaseUuidEntity, IUser
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets the list of carts owned by this user
+    /// </summary>
+    public List<Cart> Carts { get; set; } = [];
+
+    /// <summary>
     /// Gets the user's role in the system.
     /// Determines the user's permissions and access levels.
     /// </summary>

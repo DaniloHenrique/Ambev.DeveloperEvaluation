@@ -21,6 +21,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
             EntityName = typeof(TEntity).Name;
         }
 
+        /// <summary>
+        /// Creates <see cref="TEntity"/> record in database
+        /// </summary>
+        /// <param name="entity"><see cref="TEntity"/> to be inserted</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TEntity"/> inserted</returns>
+        /// <exception cref="DatabaseOperationException">Error against a database operation</exception>
         public virtual async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             try
@@ -48,6 +55,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
                 throw new DatabaseOperationException(exception.Message);
             }
         }
+        /// <summary>
+        /// Updates <see cref="TEntity"/> record in database
+        /// </summary>
+        /// <param name="entity"><see cref="TEntity"/> to be updated</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TEntity"/> updated</returns>
+        /// <exception cref="DatabaseOperationException">Error against a database operation</exception>
         public virtual async Task<Updated> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             try
@@ -75,6 +89,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
                 throw new DatabaseOperationException(exception.Message);
             }
         }
+        /// <summary>
+        /// Removes <see cref="TEntity"/> record in database
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns><see cref="Updated"/></returns>
+        /// <exception cref="DatabaseOperationException">Error against a database operation</exception>
         public virtual async Task<Deleted> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             try
@@ -102,38 +123,35 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
                 throw new DatabaseOperationException(exception.Message);
             }
         }
-        public virtual async Task<TEntity> GetByIdAsync(TKey id,CancellationToken cancellationToken)
+        /// <summary>
+        /// Retrieves <see cref="TEntity"/> by its identification in database
+        /// </summary>
+        /// <param name="id">Database identification</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="TEntity"/> or null if it not exists</returns>
+        /// <exception cref="DatabaseOperationException">Error against a database operation</exception>
+        public virtual async Task<TEntity?> GetByIdAsync(TKey id,CancellationToken cancellationToken)
         {
             try
             {
-                var found = await EntitySet.FirstOrDefaultAsync(predicate => predicate.Id.Equals(id), cancellationToken);
-
-                if (found is not null) return found;
-
-                var message = string.Format(
-                    RecordNotFoundException.NotFoundMessage,
-                    typeof(TEntity).Name,
-                    id
-                );
-
-                throw new RecordNotFoundException(message); 
-            }
-            catch(RecordNotFoundException recordNotFoundException)
-            {
-                InvalidOperationException invalidOperationException = recordNotFoundException;
-
-                throw invalidOperationException;
+                return await EntitySet.FirstOrDefaultAsync(predicate => predicate.Id.Equals(id), cancellationToken);
             }
             catch(Exception exception)
             {
                 throw new DatabaseOperationException(exception.Message);
             }
         }
-        public virtual async Task<IList<TEntity>> ListAsync(CancellationToken cancellationToken)
+        /// <summary>
+        /// Retrieves all <see cref="TEntity"/> records in database
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of <see cref="TEntity"/></returns>
+        /// <exception cref="DatabaseOperationException">Error against a database operation</exception>
+        public virtual async Task<IEnumerable<TEntity>> ListAsync(CancellationToken cancellationToken)
         {
             try
             {
-                return await EntitySet.ToListAsync();
+                return await EntitySet.ToArrayAsync(cancellationToken);
             }
             catch(Exception exception)
             {

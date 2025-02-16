@@ -9,8 +9,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
     {
         Task<Entity> CreateAsync(Entity entity, CancellationToken cancellationToken = default);
         Task<Updated> UpdateAsync(Entity entity, CancellationToken cancellationToken = default);
-        Task<Deleted> RemoveAsync(Entity id, CancellationToken cancellationToken = default);
-        Task<Entity> GetByIdAsync(Key id, CancellationToken cancellationToken = default);
-        Task<IList<Entity>> ListAsync(CancellationToken cancellationToken = default);
+        Task<Deleted> RemoveAsync(Entity entity, CancellationToken cancellationToken = default);
+        Task<Entity?> GetByIdAsync(Key id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Entity>> ListAsync(CancellationToken cancellationToken = default);
     }
 }

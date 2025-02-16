@@ -1,7 +1,7 @@
 ﻿
 namespace Ambev.DeveloperEvaluation.Domain.Rules
 {
-    public static class Discount
+    public static class DiscountRule
     {
         public static double Rule(int quantity)
         {

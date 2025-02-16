@@ -17,19 +17,24 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         /// <summary>
         /// Create instance of <see cref="ProductRepository"/>
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">Default Context of database</param>
         public ProductRepository(DefaultContext context):base(context)
         {
             _listByCategoryAsyncQuery = ProductCompiledQueries<DefaultContext>.ListByCategoryQueryAsync;
         }
 
-        public async Task<IList<Product>> ListByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Retrieves a list of <see cref="Product"/> by their category
+        /// </summary>
+        /// <param name="categoryId">Database identification of ID</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>List of <see cref="Product"/> whose category matches sent categoryId</returns>
+        /// <exception cref="DatabaseOperationException">Exception against database operations</exception>
+        public async Task<IEnumerable<Product>> ListByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var products = await _listByCategoryAsyncQuery(Context, categoryId, cancellationToken);
-                
-                return products.ToList();
+                return await _listByCategoryAsyncQuery(Context, categoryId, cancellationToken);
             }
             catch(Exception exception)
             {

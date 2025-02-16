@@ -27,5 +27,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.HasMany(u => u.Carts)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId);
+
     }
 }
