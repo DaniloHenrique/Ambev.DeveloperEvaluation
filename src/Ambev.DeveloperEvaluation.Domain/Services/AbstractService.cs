@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.Domain.Services
 {
-    public class AbstractService<TContext>
-        where TContext : DbContext
+    public class AbstractService
     {
-        protected TContext Context { get; }
+        protected DbContext Context { get; }
 
-        protected AbstractService(TContext context)
+        protected AbstractService(DbContext context)
         {
             Context = context;
         }

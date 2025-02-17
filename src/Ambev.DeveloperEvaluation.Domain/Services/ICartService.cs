@@ -12,6 +12,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
         Task<ErrorOr<Cart>> CreateCart(Cart cart,CancellationToken cancellationToken);
         Task<ErrorOr<Updated>> UpdateCart(Cart cart,CancellationToken cancellationToken);
         Task<ErrorOr<Deleted>> DeleteCart(Cart cart,CancellationToken cancellationToken);
-        Task<ErrorOr<Cart>> GetById(int id, CancellationToken cancellation);
+        Task<ErrorOr<Cart>> GetById(int id, CancellationToken cancellationToken);
     }
 }

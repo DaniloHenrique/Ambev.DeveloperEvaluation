@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Ambev.DeveloperEvaluation.ORM;
 
-public class DefaultContext : DbContext, IDefaultContext
+public class DefaultContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }

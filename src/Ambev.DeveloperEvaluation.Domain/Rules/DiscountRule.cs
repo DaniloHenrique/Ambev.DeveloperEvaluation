@@ -1,13 +1,20 @@
 ﻿
+using Ambev.DeveloperEvaluation.Domain.Entities;
+
 namespace Ambev.DeveloperEvaluation.Domain.Rules
 {
-    public static class DiscountRule
+    public class DiscountRule : IRule<CartItem, double>
     {
-        public static double Rule(int quantity)
+        public double Execute(CartItem subject)
         {
-            double n = ((double)quantity / 10);
+            double n = ((double)subject.Quantity / 10);
             var d = n == 1 ? 2 : Math.Ceiling(n);
             return d / 10;
+        }
+
+        public bool Matches(CartItem subject)
+        {
+            return subject.Quantity > 3;
         }
     }
 }

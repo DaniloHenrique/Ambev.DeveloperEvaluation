@@ -2,7 +2,7 @@
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class Sale:BaseEntity<int>
+    public class Sale:BaseIdentityEntity
     {
         public Branch Branch { get; set; } = null!; 
         public int BranchId { get; set; }   

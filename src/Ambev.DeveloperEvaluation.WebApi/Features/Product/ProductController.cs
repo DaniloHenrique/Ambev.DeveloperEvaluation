@@ -72,7 +72,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
                 new GetProductRequest(id),
                 async (product) =>
                 {
-                    var command = _mapper.Map<GetProductCommand>(product);
+                    var command = _mapper.Map<GetProductQuery>(product);
                     var response = await _mediator.Send(command, cancellationToken);
 
                     return response is null

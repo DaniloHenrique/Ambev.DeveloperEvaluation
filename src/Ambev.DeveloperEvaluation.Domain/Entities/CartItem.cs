@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.Contract;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class CartItem : BaseEntity<int>, IMeasurable
+    public class CartItem : BaseIdentityEntity, IMeasurable
     {
         public int Quantity { get; set; }
 
@@ -11,6 +11,5 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public int CartId { get; set; } 
         public Product Product { get; set; } = null!;
         public int ProductId { get; set; } 
-        public double Discount { get => Quantity > 3 ? Rules.DiscountRule.Rule(Quantity) : 0; }
     }
 }

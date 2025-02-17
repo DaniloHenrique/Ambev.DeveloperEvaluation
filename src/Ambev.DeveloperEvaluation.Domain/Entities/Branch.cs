@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.Contract;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class Branch : BaseEntity<int>, ISubstance
+    public class Branch : BaseIdentityEntity, ISubstance
     {
         public string Name { get; set; } = string.Empty;
 
