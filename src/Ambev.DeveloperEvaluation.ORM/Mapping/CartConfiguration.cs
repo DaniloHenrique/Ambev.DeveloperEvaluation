@@ -14,6 +14,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder.Property(c => c.Id).ValueGeneratedOnAdd();
 
             builder
+                .HasMany(ca => ca.Items)
+                .WithOne(ci => ci.Cart);
+
+            builder
+                .HasOne(c => c.User)
+                .WithMany(u => u.Carts)
+                .HasForeignKey(c => c.UserId);
         }
     }
 }
