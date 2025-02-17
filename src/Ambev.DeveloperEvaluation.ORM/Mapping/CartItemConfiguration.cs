@@ -16,7 +16,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
 
             builder
                 .HasOne(c => c.Product)
-                .WithMany(p => p.CartItem)
+                .WithMany(p => p.CartItems)
                 .HasForeignKey(c => c.ProductId);
 
             builder

@@ -10,8 +10,6 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
         {
             CreateMap<UpdateProductCommand, Product>()
                 .ForMember(p => p.Category, c => c.MapFrom(cp => new Category { Description = cp.Category }));
-            CreateMap<Product, UpdateProductResult>()
-                .ForMember(cp => cp.Category, c => c.MapFrom(cp => cp.Category.Description));
         }
     }
 }

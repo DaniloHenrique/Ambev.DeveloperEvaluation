@@ -1,9 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Contract;
+using ErrorOr;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct
 {
-    public class CreateProductCommand : IProduct, IRequest<CreateProductResult>
+    public class CreateProductCommand : IProduct, IRequest<ErrorOr<CreateProductResult>>
     {
         public string Title { get; set; } = string.Empty;
         public double Price { get; set; }

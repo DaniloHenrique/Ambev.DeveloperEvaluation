@@ -1,12 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
+using ErrorOr;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart
 {
-    public class GetCartHandler : IRequestHandler<GetCartCommand, GetCartResult?>
+    public class GetCartHandler : IRequestHandler<GetCartQuery, ErrorOr<GetCartResult>>
     {
+        private const string ErrorCartNotFoundMessage = "Cart {0} not found";
+
         readonly IMapper _mapper;
         readonly ICartRepository _cartRepository;
 
@@ -16,17 +20,24 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart
             _cartRepository = cartRepository;
         }
 
-        public async Task<GetCartResult?> Handle(GetCartCommand request, CancellationToken cancellationToken)
-        {
-            var cart  = _mapper.Map<Cart>(request);
+        public async Task<ErrorOr<GetCartResult>> Handle(GetCartQuery request, CancellationToken cancellationToken=default)
+        { 
+            try
+            {
+                var cart = await _cartRepository.GetByIdAsync(request.Id, cancellationToken);
 
-            var result = await _cartRepository.GetByIdAsync(cart.Id,cancellationToken);
+                if (cart is null) return Error.NotFound(description: string.Format(ErrorCartNotFoundMessage, request.Id));
 
-            if (result is null) return null;
-
-            var cartResult = _mapper.Map<GetCartResult>(result);
-
-            return cartResult;
+                return _mapper.Map<GetCartResult>(cart);
+            }
+            catch (DatabaseOperationException databaseOperationException)
+            {
+                return Error.Failure(databaseOperationException.Message);
+            }
+            catch (Exception exception)
+            {
+                return Error.Unexpected(exception.Message);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Ambev.DeveloperEvaluation.Domain.Common
 {
-    public abstract class BaseEntity<Key> where Key: unmanaged
+    public abstract class BaseEntity<TKey> where TKey: unmanaged
     {
-        public Key Id { get;set; }
+        public TKey Id { get;set; }
     }
 }

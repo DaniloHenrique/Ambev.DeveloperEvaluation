@@ -6,13 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Ambev.DeveloperEvaluation.ChainOfResponsibility\Ambev.DeveloperEvaluation.ChainOfResponsibility.csproj" />
     <ProjectReference Include="..\Ambev.DeveloperEvaluation.Domain\Ambev.DeveloperEvaluation.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />    
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="ErrorOr" Version="2.0.1" />    
     <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="OneOf" Version="3.0.271" />
   </ItemGroup>
 
 </Project>

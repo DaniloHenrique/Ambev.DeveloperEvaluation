@@ -4,54 +4,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
+    /// <summary>
+    /// Database repository that handles operations over <see cref="Cart"/> entity
+    /// </summary>
     public class CartRepository : CrudRepository<DefaultContext, Cart, int>, ICartRepository
     {
+        /// <summary>
+        /// Creates instance of <see cref="CartRepository"/>
+        /// </summary>
+        /// <param name="context">Default Context of database</param>
         public CartRepository(DefaultContext context) : base(context)
         {
         }
 
-        protected override DbSet<Cart> GetDbSet => _context.Carts;
+        public override Task<Cart?> GetByIdAsync(int id, CancellationToken cancellationToken=default)=>
+            Context.Cart
+                .Include(c=>c.User)
+                .Include(c => c.Items)
+                .ThenInclude(p=>p.Product)
+                .FirstOrDefaultAsync(c=> c.Id == id);   
 
-        private void DisableState(Cart entity)
-        {
-            if (entity.User != null)
-            {
-                _context.Users.Attach(entity.User);
-            }
-        }
-
-        public override async Task<Cart> CreateAsync(Cart entity, CancellationToken cancellationToken = default)
-        {
-            DisableState(entity);
-
-            return await base.CreateAsync(entity, cancellationToken);
-        }
-
-        public override async Task<Cart> UpdateAsync(Cart entity, CancellationToken cancellationToken = default)
-        {
-            foreach(var item in entity.Items)
-            {
-                if (item.Id == 0)
-                {
-                    _context.Products.Attach(item.Product);
-                    _context.CartItems.Add(item);
-                }
-                else
-                {
-                    _context.CartItems.Update(item);
-                }
-            }
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return entity;
-        }
-
-        public override async Task<Cart?> GetByIdAsync(int id, CancellationToken cancellationToken = default)=>
-            await _context
-                .Carts
-                .Include(c => c.User)
-                .Include(c => c.Items).ThenInclude(i=>i.Product)
-                .FirstOrDefaultAsync(cart => cart.Id == id,cancellationToken);
+        public override async Task<IEnumerable<Cart>> ListAsync(CancellationToken cancellationToken=default) =>
+            await Context.Cart
+                .Include(c=>c.Items)
+                .ToListAsync(cancellationToken);
     }
 }

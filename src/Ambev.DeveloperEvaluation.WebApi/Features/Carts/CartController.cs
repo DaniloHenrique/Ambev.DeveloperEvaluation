@@ -38,13 +38,15 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts
                     var command = _mapper.Map<CreateCartCommand>(cart);
                     var response = await _mediator.Send(command, cancellationToken);
 
-                    return Created(string.Empty, _mapper.Map<CreateCartResponse>(response));
+                    if (response.IsError) return HandlingError(response.FirstError);
+
+                    return Created(string.Empty, _mapper.Map<CreateCartResponse>(response.Value));
                 },
                 cancellationToken
             );
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<GetCartResponse>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public Task<IActionResult> Put(int id, [FromBody]UpdateCartRequest request, CancellationToken cancellationToken = default)
@@ -59,9 +61,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts
                     var request = _mapper.Map<UpdateCartCommand>(cart);
                     var result = await _mediator.Send(request, cancellationToken);
 
-                    return result.Success
-                        ? NoContent()
-                        : NotFound($"Cart {id} not found");
+                    if (result.IsError) return HandlingError(result.FirstError);
+
+                    return NoContent();
                 },
                 cancellationToken
             );
@@ -78,10 +80,12 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts
             new GetCartRequest(id),
             async (cart) =>
             {
-                var command = _mapper.Map<GetCartCommand>(cart);
+                var command = _mapper.Map<GetCartQuery>(cart);
                 var response = await _mediator.Send(command, cancellationToken);
 
-                return Ok(_mapper.Map<GetCartResponse>(response));
+                if (response.IsError) return HandlingError(response.FirstError);
+
+                return Ok(_mapper.Map<GetCartResponse>(response.Value));
             },
             cancellationToken
         );

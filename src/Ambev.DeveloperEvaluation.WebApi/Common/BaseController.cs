@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ErrorOr;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -47,5 +48,20 @@ public class BaseController : ControllerBase
         if (result.IsValid) return await request(subject);
 
         return base.BadRequest(result.Errors);
+    }
+
+    protected IActionResult HandlingError(Error error)
+    {
+        switch (error.Type)
+        {
+            case ErrorType.Unauthorized:return Unauthorized(error.Description);
+            case ErrorType.Forbidden:   return Forbid(error.Description);
+            case ErrorType.NotFound:    return NotFound(error.Description);
+            case ErrorType.Validation:  return BadRequest(error.Description);
+            case ErrorType.Failure:     return StatusCode(500,error.Description);
+            case ErrorType.Unexpected:  return StatusCode(418, error.Description);
+            default: return BadRequest(error.Description);
+        }
+
     }
 }
