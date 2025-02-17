@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using ErrorOr;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories
 {

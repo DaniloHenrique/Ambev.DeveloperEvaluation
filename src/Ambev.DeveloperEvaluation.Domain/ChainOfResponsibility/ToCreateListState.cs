@@ -22,7 +22,7 @@ namespace Ambev.DeveloperEvaluation.Domain.ChainOfResponsibility
 
             var toUpdateOrDeleteList = _received.Except(toCreateList).ToList();
 
-            return new ToUpdateListState<TEntity, TKey>(_previous, toUpdateOrDeleteList)
+            return new ToUpdateListState<TEntity>(_previous, toUpdateOrDeleteList)
             {
                 ToCreateList = toCreateList
             };

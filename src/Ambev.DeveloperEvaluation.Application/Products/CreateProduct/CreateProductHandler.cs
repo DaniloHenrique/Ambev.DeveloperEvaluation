@@ -61,7 +61,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct
 
                 await _productRepository.CreateAsync(product, cancellationToken);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 return _mapper.Map<CreateProductResult>(product);
             }

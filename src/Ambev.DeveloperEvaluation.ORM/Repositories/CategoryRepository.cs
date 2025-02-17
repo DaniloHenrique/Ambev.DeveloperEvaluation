@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
@@ -10,15 +11,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
     /// </summary>
     public class CategoryRepository : CrudRepository<DefaultContext, Category, int>, ICategoryRepository
     {
-        readonly Func<DefaultContext, string, CancellationToken,Task<Category?>> _getByDescriptionQuery;
         /// <summary>
         /// Creates an instance of <see cref="CategoryRepository"/>
         /// </summary>
         /// <param name="context">Default Context of database</param>
-        public CategoryRepository(DefaultContext context) : base(context)
-        {
-            _getByDescriptionQuery = CategoryCompiledQueries<DefaultContext>.GetByCategory;
-        }
+        public CategoryRepository(DefaultContext context) : base(context){}
 
         /// <summary>
         /// Get a <see cref="Category"/> by its description
@@ -27,11 +24,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns><see cref="Category"/> who matches sent description</returns>
         /// <exception cref="DatabaseOperationException">Exception against database operation</exception>
-        public async Task<Category?> GetByDescriptionAsync(string description, CancellationToken cancellationToken = default)
+        public Task<Category?> GetByDescriptionAsync(string description, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await _getByDescriptionQuery(Context, description, cancellationToken);
+                return Context
+                    .Categories
+                    .FirstOrDefaultAsync(categories => categories.Description == description, cancellationToken);
             }
             catch (Exception exception) 
             {

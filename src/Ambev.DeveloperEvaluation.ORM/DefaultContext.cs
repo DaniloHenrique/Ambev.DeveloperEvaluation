@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Contexts;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +11,8 @@ public class DefaultContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get;set; } 
+    public DbSet<Cart> Cart { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
 
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options){}
 

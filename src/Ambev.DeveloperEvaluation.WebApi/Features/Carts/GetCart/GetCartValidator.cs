@@ -6,7 +6,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart
     {
         public GetCartValidator()
         {
-            RuleFor(cart => cart.Id).GreaterThan(0).WithMessage("Id must be a positive integer");
+            RuleFor(cart => cart.Id)
+                .GreaterThan(0)
+                .WithMessage("Id must be a positive integer");
         }
     }
 }

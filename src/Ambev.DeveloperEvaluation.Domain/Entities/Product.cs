@@ -16,7 +16,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public string Description { get; set; } = string.Empty;
         public string? Image { get; set; } = string.Empty;
 
-
+        public List<CartItem> CartItems { get; set; } = [];
         public Category Category { get; set; } = null!;
         public int CategoryId { get;set; }
         public Rating? Rating { get; set; }   

@@ -2,7 +2,6 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
-using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
@@ -34,12 +33,38 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         {
             try
             {
-                return await _listByCategoryAsyncQuery(Context, categoryId, cancellationToken);
+                return await Context.Products
+                    .Include(p => p.Rating)
+                    .Where(p => p.Category.Id == categoryId)
+                    .ToArrayAsync(cancellationToken);
             }
             catch(Exception exception)
             {
                 throw new DatabaseOperationException(exception.Message);
             }
         }
+
+        /// <summary>
+        /// Retrieves all <see cref="Product"/> found
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>List of <see cref="Product"/></returns>
+        public override async Task<IEnumerable<Product>> ListAsync(CancellationToken cancellationToken) =>
+           await Context.Products
+                .Include(p => p.Rating)
+                .Include(p => p.Category)
+                .ToArrayAsync(cancellationToken);
+
+        /// <summary>
+        /// Retrieves a <see cref="Product"/> by its database identification
+        /// </summary>
+        /// <param name="id">Database identification</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="Product"/> or null</returns>
+        public override Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken=default)=>
+            Context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Rating)
+                .FirstOrDefaultAsync(p => p.Id == id,cancellationToken);
     }
 }

@@ -1,13 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+using Ambev.DeveloperEvaluation.Application.Products.ListProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.GetProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Product.ListProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.UpdateProduct;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
 {
@@ -25,7 +28,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
         }
 
 
-
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -39,17 +41,22 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
                     var command = _mapper.Map<CreateProductCommand>(product);
                     var response = await _mediator.Send(command, cancellationToken);
 
-                    return Created(string.Empty, _mapper.Map<CreateProductResponse>(response));
+                    if (response.IsError) return HandlingError(response.FirstError);
+
+                    return Created(string.Empty, _mapper.Map<CreateProductResponse>(response.Value));
                 },
                 cancellationToken
             );
 
-        [HttpPut]
-        [ProducesResponseType(typeof(ApiResponseWithData<UpdateProductResponse>), StatusCodes.Status200OK)]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
-        public Task<IActionResult> Update([FromBody] UpdateProductRequest request, CancellationToken cancellationToken)=>
-            ValidatedRequest(
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public Task<IActionResult> Update(int id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
+        {
+            request.Id = id;
+
+            return ValidatedRequest(
                 new UpdateProductRequestValidator(),
                 request,
                 async (product) =>
@@ -57,16 +64,20 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
                     var command = _mapper.Map<UpdateProductCommand>(product);
                     var response = await _mediator.Send(command, cancellationToken);
 
-                    return Ok(_mapper.Map<UpdateProductResponse>(response));
+                    if (response.IsError) return HandlingError(response.FirstError);
+
+                    return NoContent();
                 },
                 cancellationToken
             );
+        }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
-        public Task<IActionResult> Update(int id, CancellationToken cancellationToken) =>
+        public Task<IActionResult> Get(int id, CancellationToken cancellationToken) =>
             ValidatedRequest(
                 new GetProductRequestValidator(),
                 new GetProductRequest(id),
@@ -75,9 +86,30 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Product
                     var command = _mapper.Map<GetProductQuery>(product);
                     var response = await _mediator.Send(command, cancellationToken);
 
-                    return response is null
-                        ? NotFound($"Product {id} not found")
-                        : Ok(_mapper.Map<GetProductResponse>(response));
+                    if (response.IsError) return HandlingError(response.FirstError);
+
+                    return Ok(_mapper.Map<GetProductResponse>(response.Value));
+                },
+                cancellationToken
+            );
+
+        [HttpGet()]
+        [ProducesResponseType(typeof(ApiResponseWithData<ListProductResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
+        public Task<IActionResult> List([FromQuery]string? category, CancellationToken cancellationToken) =>
+            ValidatedRequest(
+                new ListProductRequestValidator(),
+                category is null ? new ListProductRequest() : new ListProductRequest(category),
+                async (product) =>
+                {
+                    var command = _mapper.Map<ListProductQuery>(product);
+                    var response = await _mediator.Send(command, cancellationToken);
+
+                    if (response.IsError) return HandlingError(response.FirstError);
+
+                    return Ok(response.Value.Select(product=>_mapper.Map<ListProductResponse>(product)));
                 },
                 cancellationToken
             );

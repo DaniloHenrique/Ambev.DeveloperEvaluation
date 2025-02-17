@@ -8,7 +8,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart
     {
         public CreateCartUserValidator() 
         {
-            RuleFor(c=>c.Id).NotNull().NotEmpty().WithMessage("No user id found");
+            RuleFor(c=>c.Id)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("No user id found");
         }
     }
 }

@@ -25,11 +25,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         /// <param name="items">Set of <see cref="CartItem"/></param>
         /// <returns><see cref="Created"/></returns>
         /// <exception cref="DatabaseOperationException">Exception against database operation</exception>
-        public async Task<Created> CreateRangeAsync(IEnumerable<CartItem> items)
+        public async Task<Created> CreateRangeAsync(IEnumerable<CartItem> items, CancellationToken cancellationToken=default)
         {
             try
             {
-                await Context.AddRangeAsync(items);
+                await Context.AddRangeAsync(items,cancellationToken);
 
                 return Result.Created;
             }

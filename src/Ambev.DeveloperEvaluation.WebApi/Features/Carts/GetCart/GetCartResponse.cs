@@ -6,6 +6,5 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart
     {
         public DateTime Date { get; set; }
         public List<CartItemResponse> Items { get; set; } = [];
-        public UserResponse User { get; set; } = null!;
     }
 }
