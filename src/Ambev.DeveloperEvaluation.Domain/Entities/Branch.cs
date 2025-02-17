@@ -3,9 +3,9 @@ using Ambev.DeveloperEvaluation.Domain.Contract;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class Branch : BaseEntity<int>, ISubstance
+    public class Branch : BaseIdentityEntity, ISubstance
     {
-        public string Name => throw new NotImplementedException();
+        public string Name { get; set; } = string.Empty;
 
         public Sale? Sale { get; set; }
     }

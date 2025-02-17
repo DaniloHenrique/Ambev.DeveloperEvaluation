@@ -1,40 +1,70 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.CompiledQueries;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
-    public class ProductRepository : CrudRepository<DefaultContext, Product, int>, IProductRepository
+    /// <summary>
+    /// Database repository that handles operations over <see cref="Product"/> entity
+    /// </summary>
+    public class ProductRepository : CrudRepository<DefaultContext,Product,int>, IProductRepository
     {
-        protected override DbSet<Product> GetDbSet => _context.Products;
+        readonly Func<DefaultContext, int, CancellationToken, Task<List<Product>>> _listByCategoryAsyncQuery;
 
-        public ProductRepository(DefaultContext context):base(context){}
-
-        private Task<Category?> GetCategoryByDescription(string description, CancellationToken cancellationToken=default)=>
-            _context.Categories.FirstOrDefaultAsync(c => c.Description == description, cancellationToken);
-
-        public override async Task<Product> CreateAsync(Product entity, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Create instance of <see cref="ProductRepository"/>
+        /// </summary>
+        /// <param name="context">Default Context of database</param>
+        public ProductRepository(DefaultContext context):base(context)
         {
-            var category = await GetCategoryByDescription(entity.Category.Description,cancellationToken);
-
-            if (category is not null)
-            {
-                entity.Category = category;
-
-                _context.Categories.Attach(entity.Category);
-            }
-
-            return await base.CreateAsync(entity, cancellationToken);
+            _listByCategoryAsyncQuery = ProductCompiledQueries<DefaultContext>.ListByCategoryQueryAsync;
         }
 
-        public Task<IEnumerable<Product>> ListByCategoryAsync(int categoryId, CancellationToken cancellationToken = default) =>
-            Task.Run(()=>ProductCompiledQueries<DefaultContext>.ListProductByCategoryQuery(_context, categoryId));
+        /// <summary>
+        /// Retrieves a list of <see cref="Product"/> by their category
+        /// </summary>
+        /// <param name="categoryId">Database identification of ID</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>List of <see cref="Product"/> whose category matches sent categoryId</returns>
+        /// <exception cref="DatabaseOperationException">Exception against database operations</exception>
+        public async Task<IEnumerable<Product>> ListByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await Context.Products
+                    .Include(p => p.Rating)
+                    .Where(p => p.Category.Id == categoryId)
+                    .ToArrayAsync(cancellationToken);
+            }
+            catch(Exception exception)
+            {
+                throw new DatabaseOperationException(exception.Message);
+            }
+        }
 
-        public Task<Product?> Get(int id) => _context
-            .Products
-            .Include(p => p.Category)
-            .Include(p => p.Rating)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        /// <summary>
+        /// Retrieves all <see cref="Product"/> found
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>List of <see cref="Product"/></returns>
+        public override async Task<IEnumerable<Product>> ListAsync(CancellationToken cancellationToken) =>
+           await Context.Products
+                .Include(p => p.Rating)
+                .Include(p => p.Category)
+                .ToArrayAsync(cancellationToken);
+
+        /// <summary>
+        /// Retrieves a <see cref="Product"/> by its database identification
+        /// </summary>
+        /// <param name="id">Database identification</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns><see cref="Product"/> or null</returns>
+        public override Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken=default)=>
+            Context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Rating)
+                .FirstOrDefaultAsync(p => p.Id == id,cancellationToken);
     }
 }

@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ErrorOr;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
 {
-    public class GetProductCommand:IRequest<GetProductResult>
+    public class GetProductQuery:IRequest<ErrorOr<GetProductResult>>
     {
         public int Id { get; set; }
     }
