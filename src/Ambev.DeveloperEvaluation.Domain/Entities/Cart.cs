@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.Contract;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class Cart : BaseIdentityEntity, IDateble
+    public class Cart : BaseIdentityEntity
     {
         public Cart() 
         {
